@@ -1,0 +1,168 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIKAFTA Dose Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f8fa;
+            color: #2a3e52;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .header {
+            background-color: #0070ba;
+            padding: 20px;
+            color: #fff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        label {
+            font-weight: 700;
+        }
+        input, select {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .submit-btn {
+            background-color: #0070ba;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #005f9f;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f4ff;
+            border-radius: 4px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TRIKAFTA Dose Calculator</h1>
+        <p>Accurately calculate the required TRIKAFTA dose based on patient information</p>
+    </div>
+
+    <div class="container">
+        <form id="doseCalculator">
+            <label for="age">Age (years)</label>
+            <input type="number" id="age" name="age" min="2" required>
+
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" name="weight" step="0.1" required>
+
+            <label for="hepaticImpairment">Hepatic Impairment</label>
+            <select id="hepaticImpairment" name="hepaticImpairment" required>
+                <option value="none">None</option>
+                <option value="mild">Mild (Child-Pugh Class A)</option>
+                <option value="moderate">Moderate (Child-Pugh Class B)</option>
+                <option value="severe">Severe (Child-Pugh Class C)</option>
+            </select>
+
+            <label for="renalImpairment">Renal Impairment</label>
+            <select id="renalImpairment" name="renalImpairment" required>
+                <option value="none">None</option>
+                <option value="severe">Severe</option>
+            </select>
+
+            <label for="fatMeal">Does the patient take fat-containing food regularly?</label>
+            <select id="fatMeal" name="fatMeal" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
+            <button type="button" class="submit-btn" onclick="calculateDose()">Calculate Dose</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateDose() {
+            const age = parseFloat(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const hepaticImpairment = document.getElementById('hepaticImpairment').value;
+            const renalImpairment = document.getElementById('renalImpairment').value;
+            const fatMeal = document.getElementById('fatMeal').value;
+
+            let morningDose, eveningDose;
+
+            if (age >= 2 && age < 6) {
+                if (weight < 14) {
+                    morningDose = "One white and blue packet (elexacaftor 80 mg, tezacaftor 40 mg, ivacaftor 60 mg)";
+                    eveningDose = "One white and green packet (ivacaftor 59.5 mg)";
+                } else {
+                    morningDose = "One white and orange packet (elexacaftor 100 mg, tezacaftor 50 mg, ivacaftor 75 mg)";
+                    eveningDose = "One white and pink packet (ivacaftor 75 mg)";
+                }
+            } else if (age >= 6 && age < 12) {
+                if (weight < 30) {
+                    morningDose = "Two light orange tablets (elexacaftor 50 mg, tezacaftor 25 mg, ivacaftor 37.5 mg)";
+                    eveningDose = "One light blue tablet (ivacaftor 75 mg)";
+                } else {
+                    morningDose = "Two light orange tablets (elexacaftor 100 mg, tezacaftor 50 mg, ivacaftor 75 mg)";
+                    eveningDose = "One light blue tablet (ivacaftor 150 mg)";
+                }
+            } else if (age >= 12) {
+                morningDose = "Two light orange tablets (elexacaftor 100 mg, tezacaftor 50 mg, ivacaftor 75 mg)";
+                eveningDose = "One light blue tablet (ivacaftor 150 mg)";
+            } else {
+                document.getElementById('result').innerHTML = "<p>Age must be at least 2 years to calculate the dose accurately.</p>";
+                return;
+            }
+
+            if (hepaticImpairment === "moderate") {
+                eveningDose = "<span style='color: red;'>Dose adjustment required: Consult prescribing information.</span>";
+            } else if (hepaticImpairment === "severe") {
+                morningDose = "<span style='color: red;'>Use not recommended for severe hepatic impairment.</span>";
+                eveningDose = "<span style='color: red;'>Use not recommended for severe hepatic impairment.</span>";
+                document.getElementById('result').innerHTML = `<p><strong>Morning Dose:</strong> ${morningDose}</p><p><strong>Evening Dose:</strong> ${eveningDose}</p><p><strong>Fat-Containing Food Reminder:</strong> Not applicable as use is not recommended.</p>`;
+                return;
+            }
+
+            if (renalImpairment === "severe") {
+                morningDose += " <span style='color: red;'>(Caution advised for severe renal impairment)</span>";
+            }
+
+            const resultText = `<p><strong>Morning Dose:</strong> ${morningDose}</p>
+                                <p><strong>Evening Dose:</strong> ${eveningDose}</p>
+                                <p><strong>Fat-Containing Food Reminder:</strong> Ensure patient takes a fat-containing meal/snack before or after the dose for better absorption, if recommended.</p>`;
+
+            document.getElementById('result').innerHTML = resultText;
+        }
+    </script>
+</body>
+</html>
